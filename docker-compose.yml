@@ -1,0 +1,37 @@
+version: '2'
+
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    volumes:
+      - $HOME/Documents/safe:/home/safe/app
+    ports:
+      - 80:80
+    links:
+      - database:safedb
+
+  database:
+    image: mysql:5.7
+    restart: unless-stopped
+    environment:
+      - MYSQL_DATABASE=hellosafeuk
+      - MYSQL_USER=adrian
+      - MYSQL_PASSWORD=1234
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - 3306:3306
+    volumes:
+      - $PWD/hellosafedb:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: unless-stopped
+    environment:
+      - PMA_HOST=database
+    ports:
+      - 9080:80
+    links:
+      - database
+volumes:
+  safedb:
