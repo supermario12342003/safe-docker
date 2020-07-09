@@ -2,10 +2,17 @@ version: '2'
 
 services:
   web:
-    build: .
+    build:
+      context: .
+      args:
+        GITHUB_EMAIL: megnwei@hellosafe.fr
+        GITHUB_NAME: Mengwei
     restart: unless-stopped
     volumes:
-      - $HOME/Documents/safe:/home/safe/app
+      - $HOME/Documents/safe:/root/app
+      - $HOME/.ssh:/root/.ssh
+    environment:
+      - COMPOSER_AUTH={"github-oauth":{"github.com":"9fd83423cd4ed57b34f8790e7e9f0f102b5c60a8"}}
     ports:
       - 80:80
     links:
