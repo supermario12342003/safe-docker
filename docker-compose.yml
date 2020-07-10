@@ -5,14 +5,12 @@ services:
     build:
       context: .
       args:
-        GITHUB_EMAIL: megnwei@hellosafe.fr
-        GITHUB_NAME: Mengwei
+        USER: mengwei
     restart: unless-stopped
     volumes:
-      - $HOME/Documents/safe:/root/app
-      - $HOME/.ssh:/root/.ssh
+      - /home/mengwei/Documents/safe:/home/mengwei/app
     environment:
-      - COMPOSER_AUTH={"github-oauth":{"github.com":"9fd83423cd4ed57b34f8790e7e9f0f102b5c60a8"}}
+      COMPOSER_AUTH: '{"github-oauth":{"github.com":"${GITHUB_PRIVATE_ACCESS_TOKEN}"}}'
     ports:
       - 80:80
     links:
@@ -30,7 +28,7 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - $PWD/hellosafedb:/var/lib/mysql
+      - /db/hellosafedb:/var/lib/mysql
     #mysqldump -u USERNAME --password=PASS DATABASENAME -h DATABASEHOST > NAME-dump.sql
     #cat ./NAME-dump.sql | docker exec -i safe_database_1 /usr/bin/mysql -u adrian --password=1234 hellosafeuk
 

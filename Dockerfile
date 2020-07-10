@@ -12,14 +12,16 @@ RUN docker-php-ext-install mysqli pdo pdo_mysql
 #install gd
 RUN docker-php-ext-install gd
 RUN docker-php-ext-install zip
-
-ENV APACHE_DOCUMENT_ROOT /root/app/web
+ARG USER
+ENV APACHE_DOCUMENT_ROOT /home/$USER/app/web
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
 EXPOSE 80
 
-WORKDIR /root/app
+RUN useradd -ms /bin/bash $USER
+WORKDIR /home/$USER/app
+RUN mkdir /home/$USER/app/web && echo "Hello Safe<?php phpinfo();" > /home/$USER/app/web/index.php && chmod -R 755 /home/$USER/app/web && chown -R $USER /home/$USER/app
 
 RUN yes | pecl install xdebug \
     && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
@@ -33,7 +35,6 @@ RUN touch $HOME/.bashrc \
 		&& printf "parse_git_branch() {\ngit branch 2> /dev/null \| sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'\n}\n"  >> $HOME/.bashrc \
 		&& echo "export PS1=\"\u@\h \[\e[32m\]\w \[\e[91m\]\$(parse_git_branch)\[\e[00m\]$ \"" >> $HOME/.bashrc
 
-ARG GITHUB_EMAIL
-ARG GITHUB_NAME
+RUN printf "[user]\n\temail = ${EMAIL}\n\tname = $USER\n" > $HOME/.gitconfig
 
-RUN printf "[user]\n\temail = ${GITHUB_EMAIL}\n\tname = ${GITHUB_NAME}\n" > $HOME/.gitconfig
+RUN apt-get install unzip
