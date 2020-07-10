@@ -5,10 +5,10 @@ services:
     build:
       context: .
       args:
-        USER: mengwei
+        USER: ${USER}
     restart: unless-stopped
     volumes:
-      - /home/mengwei/Documents/safe:/home/mengwei/app
+      - /home/${USER}/Documents/safe:/home/${USER}/app
     environment:
       COMPOSER_AUTH: '{"github-oauth":{"github.com":"${GITHUB_PRIVATE_ACCESS_TOKEN}"}}'
     ports:
