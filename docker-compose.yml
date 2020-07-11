@@ -5,32 +5,30 @@ services:
     build:
       context: .
       args:
-        USER: ${USER}
+        gid: ${GID}
     restart: unless-stopped
     volumes:
-      - /home/${USER}/Documents/safe:/home/${USER}/app
+      - ${APP_PATH}:/home/safe-dev/app
     environment:
-      COMPOSER_AUTH: '{"github-oauth":{"github.com":"${GITHUB_PRIVATE_ACCESS_TOKEN}"}}'
+      - COMPOSER_AUTH=${COMPOSER_AUTH}
     ports:
-      - 80:80
+      - 1234:80
     links:
-      - database:safedb
+      - database:${DB_HOST}
 
   database:
     image: mysql:5.7
     restart: unless-stopped
     command: --max_allowed_packet=32505856
     environment:
-      - MYSQL_DATABASE=hellosafeuk
-      - MYSQL_USER=adrian
-      - MYSQL_PASSWORD=1234
-      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT}
     ports:
       - 3306:3306
     volumes:
-      - /db/hellosafedb:/var/lib/mysql
-    #mysqldump -u USERNAME --password=PASS DATABASENAME -h DATABASEHOST > NAME-dump.sql
-    #cat ./NAME-dump.sql | docker exec -i safe_database_1 /usr/bin/mysql -u adrian --password=1234 hellosafeuk
+      - ${PWD}/hellosafedb:/var/lib/minesql
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin

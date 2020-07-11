@@ -25,16 +25,17 @@ RUN apt-get install -y nodejs
 
 RUN apt-get install unzip
 
-ARG USER
-RUN useradd -ms /bin/bash $USER
-ENV APACHE_DOCUMENT_ROOT /home/$USER/app/web
+ARG gid
+RUN useradd -rm -s /bin/bash -g ${gid} -u 1000 safe-dev
+
+ENV APACHE_DOCUMENT_ROOT /home/safe-dev/www
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
-WORKDIR /home/$USER/app
-RUN mkdir /home/$USER/app/web && echo "Hello Safe<?php phpinfo();" > /home/$USER/app/web/index.php && chmod -R 755 /home/$USER/app/web && chown -R $USER /home/$USER/app
 
-RUN touch home/$USER/.bashrc \
-		&& printf "parse_git_branch() {\ngit branch 2> /dev/null \| sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'\n}\n"  >> /home/$USER/.bashrc \
-		&& echo "export PS1=\"\u@\h \[\e[32m\]\w \[\e[91m\]\$(parse_git_branch)\[\e[00m\]$ \"" >> /home/$USER/.bashrc
+WORKDIR /home/safe-dev/
+RUN printf "parse_git_branch() {\ngit branch 2> /dev/null \| sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'\n}\n"  > .bashrc \
+		&& echo "export PS1=\"\u@\h \[\e[32m\]\w \[\e[91m\]\$(parse_git_branch)\[\e[00m\]$ \"" >> .bashrc
 
-RUN printf "[user]\n\temail = ${EMAIL}\n\tname = $USER\n" > /home/$USER/.gitconfig
+RUN echo "alias artixor=\"cd /home/safe-dev/app/web/wp-content/plugins/wp-artixor\"" >> .bashrc
+RUN echo "alias theme=\"cd /home/safe-dev/app/web/wp-content/themes/wp-safe-theme\"" >> .bashrc
+RUN mkdir www && echo "Hello World<?php echo phpinfo()" > www/index.php
