@@ -28,7 +28,7 @@ RUN apt-get install unzip
 ARG gid
 RUN useradd -rm -s /bin/bash -g ${gid} -u 1000 safe-dev
 
-ENV APACHE_DOCUMENT_ROOT /home/safe-dev/www
+ENV APACHE_DOCUMENT_ROOT /home/safe-dev/app/web
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
@@ -38,4 +38,10 @@ RUN printf "parse_git_branch() {\ngit branch 2> /dev/null \| sed -e '/^[^*]/d' -
 
 RUN echo "alias artixor=\"cd /home/safe-dev/app/web/wp-content/plugins/wp-artixor\"" >> .bashrc
 RUN echo "alias theme=\"cd /home/safe-dev/app/web/wp-content/themes/wp-safe-theme\"" >> .bashrc
-RUN mkdir www && echo "Hello World<?php echo phpinfo()" > www/index.php
+RUN mkdir app && echo "Hello World<?php echo phpinfo()" > app/index.php
+RUN chown -R www-data:www-data ./app
+#git config --global user.email "supermario12342003@gmail.com"
+#git config --global user.name "Mengwei"
+#ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+#eval "$(ssh-agent -s)"
+#ssh-add ~/.ssh/id_rsa

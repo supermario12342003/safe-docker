@@ -12,23 +12,26 @@ services:
     environment:
       - COMPOSER_AUTH=${COMPOSER_AUTH}
     ports:
-      - 1234:80
+      - 80:80
     links:
-      - database:${DB_HOST}
+      - database:${SAFE_DB_HOST}
 
   database:
     image: mysql:5.7
     restart: unless-stopped
-    command: --max_allowed_packet=32505856
+    command:
+      --max_allowed_packet=32505856
+      --innodb_use_native_aio=0
+    user: "1000:1000"
     environment:
-      - MYSQL_DATABASE=${DB_NAME}
-      - MYSQL_USER=${DB_USER}
-      - MYSQL_PASSWORD=${DB_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${DB_ROOT}
+      - MYSQL_DATABASE=${SAFE_DB_NAME}
+      - MYSQL_USER=${SAFE_DB_USER}
+      - MYSQL_PASSWORD=${SAFE_DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=1234
     ports:
       - 3306:3306
     volumes:
-      - ${PWD}/hellosafedb:/var/lib/minesql
+      - ${DB_PATH}:/var/lib/mysql
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
