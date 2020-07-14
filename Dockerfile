@@ -25,8 +25,7 @@ RUN apt-get install -y nodejs
 
 RUN apt-get install unzip
 
-ARG gid
-RUN useradd -rm -s /bin/bash -g ${gid} -u 1000 safe-dev
+RUN useradd -rm -s /bin/bash -g www-data -u 1000 safe-dev
 
 ENV APACHE_DOCUMENT_ROOT /home/safe-dev/app/web
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf

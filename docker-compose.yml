@@ -4,8 +4,6 @@ services:
   web:
     build:
       context: .
-      args:
-        gid: ${GID}
     restart: unless-stopped
     volumes:
       - ${APP_PATH}:/home/safe-dev/app
