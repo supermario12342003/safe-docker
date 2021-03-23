@@ -1,35 +1,37 @@
-version: '2'
-
 services:
-  web:
-    build:
-      context: .
-    restart: unless-stopped
-    volumes:
-      - ${APP_PATH}:/home/safe-dev/app
-    environment:
-      - COMPOSER_AUTH=${COMPOSER_AUTH}
-    ports:
-      - 80:80
-    links:
-      - database:${SAFE_DB_HOST}
-
   database:
-    image: mysql:5.7
-    restart: unless-stopped
+    image: mariadb:latest
+    volumes:
+      - ./db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: wordpress
+      MYSQL_DATABASE: ${SAFE_DB_NAME}
+      MYSQL_USER: ${SAFE_DB_USER}
+      MYSQL_PASSWORD: ${SAFE_DB_PASSWORD}
     command:
       --max_allowed_packet=32505856
       --innodb_use_native_aio=0
-    user: "1000:1000"
-    environment:
-      - MYSQL_DATABASE=${SAFE_DB_NAME}
-      - MYSQL_USER=${SAFE_DB_USER}
-      - MYSQL_PASSWORD=${SAFE_DB_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=1234
     ports:
       - 3306:3306
+
+  wordpress:
+    depends_on:
+      - database
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8888:80"
+    restart: always
     volumes:
-      - ${DB_PATH}:/var/lib/mysql
+      - "./wordpress:/home/dev/wordpress" #M1 fix nfs not supported
+      #- "nfsmount:/home/dev/wordpress"
+    env_file:
+      - .env
+    extra_hosts:
+      - "host.docker.internal:192.168.1.95" #M1 fix your local ip address ipconfig getifaddr en0
+      #- "host.docker.internal:host-gateway"
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -37,8 +39,14 @@ services:
     environment:
       - PMA_HOST=database
     ports:
-      - 9080:80
+      - 9088:80
     links:
       - database
+
 volumes:
-  safedb:
+  nfsmount:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=3
+      device: ":${PWD}/wordpress"

@@ -1,12 +1,19 @@
-# safe-docker
-
-##Usage
+#Installation For Local Development
+1. configure .env by copy .env-example
+```$xslt
+cp .env-example .env
 ```
-
+2. launch the servers and database
 ```
-
-##Tips
+docker-compose up
 ```
-mysqldump -u USERNAME --password=PASS DATABASE_NAME -h DATABASEHOST > NAME-dump.sql
-cat ./NAME-dump.sql | docker exec -i safe_database_1 /usr/bin/mysql -u mengwei --password=1234 DATABASE_NAME
+3. When the servers are up, in another terminal
+```$xslt
+docker exec --user dev -it container_name bash
+#composer install
+```  
+4. if encounter forbidden access to resouce error
+```$xslt
+docker exec -it container_name bash
+#chown -R dev:www-data ./wordpress
 ```
