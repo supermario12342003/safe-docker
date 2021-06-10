@@ -9,6 +9,7 @@ services:
       MYSQL_DATABASE: ${SAFE_DB_NAME}
       MYSQL_USER: ${SAFE_DB_USER}
       MYSQL_PASSWORD: ${SAFE_DB_PASSWORD}
+      MYSQL_TCP_PORT: 3308
     command:
       --max_allowed_packet=32505856
       --innodb_use_native_aio=0
@@ -38,6 +39,7 @@ services:
     restart: unless-stopped
     environment:
       - PMA_HOST=database
+      - PMA_PORT=3308
     ports:
       - 9088:80
     links:
