@@ -20,6 +20,9 @@ services:
     depends_on:
       - database
     build:
+      args:
+        DEV_EMAIL: ${DEV_EMAIL}
+        DEV_NAME: ${DEV_NAME}
       context: ./
       dockerfile: Dockerfile
     ports:

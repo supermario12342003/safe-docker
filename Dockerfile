@@ -49,5 +49,7 @@ RUN apt-get dist-upgrade -y
 RUN apt-get install -y libmagickwand-dev libmagickcore-dev && pecl install imagick-3.4.3 && docker-php-ext-enable imagick
 RUN echo "alias theme='cd /home/dev/wordpress/web/wp-content/themes/wp-safe-theme/'" >> .bashrc
 RUN echo "alias artixor='cd /home/dev/wordpress/web/wp-content/plugins/wp-artixor/'" >> .bashrc
-RUN git config --global user.email "${DEV_EMAIL}"
-RUN git config --global user.name "${DEV_NAME}"
+ARG DEV_EMAIL
+ARG DEV_NAME
+RUN git config --system user.email "${DEV_EMAIL}"
+RUN git config --system user.name "${DEV_NAME}"
