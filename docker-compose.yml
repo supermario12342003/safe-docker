@@ -13,7 +13,7 @@ services:
       --max_allowed_packet=32505856
       --innodb_use_native_aio=0
     ports:
-      - 3306:3306
+      - 3308:3306
 
   wordpress:
     depends_on:
@@ -25,13 +25,13 @@ services:
       - "8888:80"
     restart: always
     volumes:
+      - ~/.ssh:/home/dev/.ssh
       - "./wordpress:/home/dev/wordpress" #M1 fix nfs not supported
       #- "nfsmount:/home/dev/wordpress"
     env_file:
       - .env
     extra_hosts:
-      - "host.docker.internal:192.168.1.95" #M1 fix your local ip address ipconfig getifaddr en0
-      #- "host.docker.internal:host-gateway"
+      - "host.docker.internal:host-gateway"
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
